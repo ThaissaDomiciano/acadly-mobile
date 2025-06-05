@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderColor: '#ccc',
     borderWidth: 1,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   buttonContainer: {
     marginTop: 10,

@@ -34,7 +34,10 @@ export default function Login({ navigation }) {
 
   return (
     <View style={styles.container}>
-       <Image source={require('../assets/logo-mobile.png')} style={styles.imagem} />
+       <View style={styles.logoContainer}>
+        <Image source={require('../assets/logo-mobile.png')} style={styles.imagem} />
+      </View>
+      <View style={styles.formContainer}>
       <Text style={styles.title}>LOGIN</Text>
       <TextInput
         style={styles.input}
@@ -55,14 +58,54 @@ export default function Login({ navigation }) {
         <Text style={styles.buttonText}>ENTRAR</Text>
       </TouchableOpacity>
     </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24, alignItems: 'center', backgroundColor: '#FAFAFA'},
-  title: { fontSize: 32, fontWeight: 'bold', marginBottom: 24, textAlign: 'center', color: '#253D81' },
-  input: { borderWidth: 1, borderColor: '#ccc', padding: 12, marginBottom: 16, borderRadius: 8, width: '100%' },
-  button: { backgroundColor: '#253D81', padding: 16, borderRadius: 10, width: '100%', marginTop: 16 },
-  buttonText: { color: '#FFD118', fontWeight: 'bold', textAlign: 'center' },
-  imagem: { width: 200, height: 200, alignSelf: 'center',  resizeMode: 'contain', }
+  container: {
+    flex: 1,
+    backgroundColor: '#FAFAFA',
+    paddingHorizontal: 24,
+  },
+  logoContainer: {
+    marginTop: 100,
+    alignItems: 'center',
+  },
+  imagem: {
+    width: 300,
+    height: 200,
+    resizeMode: 'contain',
+  },
+  formContainer: {
+    flex: 1,
+    justifyContent: 'flex-start',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 24,
+    textAlign: 'center',
+    color: '#253D81',
+  },
+  input: {
+    borderWidth: 2,
+    borderColor: '#253D81',
+    padding: 16,
+    marginBottom: 16,
+    borderRadius: 10,
+    width: '100%',
+  },
+  button: {
+    backgroundColor: '#253D81',
+    padding: 18,
+    borderRadius: 10,
+    width: '100%',
+  },
+  buttonText: {
+    color: '#FFD118',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 16,
+  },
 });
