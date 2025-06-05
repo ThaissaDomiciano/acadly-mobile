@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Alert, ActivityIndicator, Button, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Alert, ActivityIndicator, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
@@ -12,6 +12,8 @@ export default function DashboardAluno({ route, navigation }) {
   const [turmaSelecionada, setTurmaSelecionada] = useState('');
   const [loading, setLoading] = useState(true);
   const [notas, setNotas] = useState([]);
+  const [atividades, setAtividades] = useState([]);
+  const [mostrarAtividades, setMostrarAtividades] = useState(false);
 
   const screenWidth = Dimensions.get('window').width;
 
@@ -48,6 +50,24 @@ export default function DashboardAluno({ route, navigation }) {
     }
   };
 
+  const handleVerAtividades = async () => {
+    if (!turmaSelecionada) {
+      Alert.alert("Atenção", "Selecione uma turma para ver as atividades.");
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `http://172.16.201.225:8080/entregas/status/aluno/${usuario.id}/turma/${turmaSelecionada}`
+      );
+      setAtividades(response.data);
+      setMostrarAtividades(true);
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erro", "Não foi possível carregar as atividades.");
+    }
+  };
+
   const handleLogout = () => {
     navigation.navigate('Login');
   };
@@ -69,25 +89,30 @@ export default function DashboardAluno({ route, navigation }) {
       ) : (
         <>
           <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={String(turmaSelecionada)}
-            onValueChange={(itemValue) => setTurmaSelecionada(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="SELECIONE A TURMA" value="" />
-            {turmas.map((turma) => (
-              <Picker.Item
-                key={turma.id}
-                label={turma.nomeMateria}
-                value={turma.id}
-              />
-            ))}
-          </Picker>
-            </View>
+            <Picker
+              selectedValue={String(turmaSelecionada)}
+              onValueChange={(itemValue) => setTurmaSelecionada(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="SELECIONE A TURMA" value="" />
+              {turmas.map((turma) => (
+                <Picker.Item
+                  key={turma.id}
+                  label={turma.nomeMateria}
+                  value={turma.id}
+                />
+              ))}
+            </Picker>
+          </View>
+
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.botao} onPress={handleVerNotas}>
-            <Text style={styles.textoBotao}>VER NOTAS</Text>
-          </TouchableOpacity>
+              <Text style={styles.textoBotao}>VER NOTAS</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.botao} onPress={handleVerAtividades}>
+              <Text style={styles.textoBotao}>VER ATIVIDADES</Text>
+            </TouchableOpacity>
           </View>
 
           {notas.length > 0 && (
@@ -133,6 +158,30 @@ export default function DashboardAluno({ route, navigation }) {
                   borderRadius: 16,
                 }}
               />
+            </View>
+          )}
+
+          {mostrarAtividades && (
+            <View style={styles.notasContainer}>
+              <Text style={styles.label}>ATIVIDADES:</Text>
+              {atividades.length === 0 ? (
+                <Text style={styles.notaLinha}>Nenhuma atividade encontrada.</Text>
+              ) : (
+                atividades.map((atividade, index) => (
+                  <Text
+                    key={index}
+                    style={[
+                      styles.notaLinha,
+                      {
+                        borderColor:
+                          atividade.status === "Entregue" ? "#32CD32" : "#DE3232",
+                      },
+                    ]}
+                  >
+                    {atividade.titulo} - {atividade.status}
+                  </Text>
+                ))
+              )}
             </View>
           )}
         </>
@@ -182,6 +231,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 10,
     marginBottom: 20,
+    gap: 10,
   },
   botao: {
     backgroundColor: '#253D81',
