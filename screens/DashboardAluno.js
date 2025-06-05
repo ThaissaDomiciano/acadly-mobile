@@ -1,21 +1,43 @@
-import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Alert, ActivityIndicator, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+  Dimensions,
+  ScrollView,
+  TouchableOpacity,
+  Animated,
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { LineChart } from 'react-native-chart-kit';
 
 export default function DashboardAluno({ route, navigation }) {
-
   const { usuario } = route.params;
   const [turmas, setTurmas] = useState([]);
   const [turmaSelecionada, setTurmaSelecionada] = useState('');
   const [loading, setLoading] = useState(true);
   const [notas, setNotas] = useState([]);
   const [atividades, setAtividades] = useState([]);
+  const [mostrarNotas, setMostrarNotas] = useState(false);
   const [mostrarAtividades, setMostrarAtividades] = useState(false);
 
   const screenWidth = Dimensions.get('window').width;
+
+  // Animações
+  const animNotas = useRef(new Animated.Value(0)).current;
+  const animAtividades = useRef(new Animated.Value(0)).current;
+
+  const rotacionar = (animatedValue, mostrar) => {
+    Animated.timing(animatedValue, {
+      toValue: mostrar ? 1 : 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  };
 
   useEffect(() => {
     async function carregarTurmas() {
@@ -44,6 +66,8 @@ export default function DashboardAluno({ route, navigation }) {
 
       const response = await axios.get(url);
       setNotas(response.data);
+      setMostrarNotas(!mostrarNotas);
+      rotacionar(animNotas, !mostrarNotas);
     } catch (error) {
       console.error(error);
       Alert.alert('Erro', 'Não foi possível carregar as notas.');
@@ -61,7 +85,9 @@ export default function DashboardAluno({ route, navigation }) {
         `http://172.16.201.225:8080/entregas/status/aluno/${usuario.id}/turma/${turmaSelecionada}`
       );
       setAtividades(response.data);
-      setMostrarAtividades(true);
+      const novoEstado = !mostrarAtividades;
+      setMostrarAtividades(novoEstado);
+      rotacionar(animAtividades, novoEstado);
     } catch (error) {
       console.error(error);
       Alert.alert("Erro", "Não foi possível carregar as atividades.");
@@ -71,6 +97,12 @@ export default function DashboardAluno({ route, navigation }) {
   const handleLogout = () => {
     navigation.navigate('Login');
   };
+
+  const rotateSeta = (animatedValue) =>
+    animatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0deg', '180deg'],
+    });
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -115,9 +147,20 @@ export default function DashboardAluno({ route, navigation }) {
             </TouchableOpacity>
           </View>
 
-          {notas.length > 0 && (
+          {mostrarNotas && notas.length > 0 && (
             <View style={styles.notasContainer}>
-              <Text style={styles.label}>NOTAS:</Text>
+              <View style={styles.labelComSeta}>
+                <Text style={styles.label}>NOTAS:</Text>
+                <TouchableOpacity onPress={() => {
+                  setMostrarNotas(false);
+                  rotacionar(animNotas, false);
+                }}>
+                  <Animated.View style={{ transform: [{ rotate: rotateSeta(animNotas) }] }}>
+                    <Ionicons name="chevron-up" size={20} color="#253D81" />
+                  </Animated.View>
+                </TouchableOpacity>
+              </View>
+
               {notas.map((n, index) => (
                 <Text key={index} style={styles.notaLinha}>
                   {n.materia}: {n.nota}
@@ -163,7 +206,18 @@ export default function DashboardAluno({ route, navigation }) {
 
           {mostrarAtividades && (
             <View style={styles.notasContainer}>
-              <Text style={styles.label}>ATIVIDADES:</Text>
+              <View style={styles.labelComSeta}>
+                <Text style={styles.label}>ATIVIDADES:</Text>
+                <TouchableOpacity onPress={() => {
+                  setMostrarAtividades(false);
+                  rotacionar(animAtividades, false);
+                }}>
+                  <Animated.View style={{ transform: [{ rotate: rotateSeta(animAtividades) }] }}>
+                    <Ionicons name="chevron-up" size={20} color="#253D81" />
+                  </Animated.View>
+                </TouchableOpacity>
+              </View>
+
               {atividades.length === 0 ? (
                 <Text style={styles.notaLinha}>Nenhuma atividade encontrada.</Text>
               ) : (
@@ -173,8 +227,7 @@ export default function DashboardAluno({ route, navigation }) {
                     style={[
                       styles.notaLinha,
                       {
-                        borderColor:
-                          atividade.status === "Entregue" ? "#32CD32" : "#DE3232",
+                        borderColor: atividade.status === "Entregue" ? "#32CD32" : "#DE3232",
                       },
                     ]}
                   >
@@ -217,6 +270,12 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
+    marginBottom: 8,
+  },
+  labelComSeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 8,
   },
   picker: {
