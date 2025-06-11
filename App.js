@@ -4,6 +4,7 @@ import { useFonts, Rajdhani_400Regular, Rajdhani_700Bold } from '@expo-google-fo
 
 import Login from './screens/Login';
 import DashboardAluno from './screens/DashboardAluno';
+import NotificacoesAluno from './screens/NotificacoesAluno'; 
 
 const Stack = createStackNavigator();
 
@@ -19,6 +20,11 @@ if (!fontsLoaded) return null;
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
         <Stack.Screen name="DashboardAluno" component={DashboardAluno} options={{ headerShown: false }}/>
+        <Stack.Screen
+          name="NotificacoesAluno"
+          component={NotificacoesAluno}
+           options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

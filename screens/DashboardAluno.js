@@ -239,6 +239,21 @@ export default function DashboardAluno({ route, navigation }) {
           )}
         </>
       )}
+
+      <TouchableOpacity
+      style={{
+        position: 'absolute',
+        bottom: 20,
+        right: 20,
+        backgroundColor: '#253D81',
+        padding: 16,
+        borderRadius: 50,
+        elevation: 5
+      }}
+      onPress={() => navigation.navigate('NotificacoesAluno', { usuario })}
+    >
+      <Ionicons name="chatbox-ellipses" size={28} color="#FFD118" />
+    </TouchableOpacity>
     </ScrollView>
   );
 }
