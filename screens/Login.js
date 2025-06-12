@@ -7,30 +7,32 @@ export default function Login({ navigation }) {
   const [senha, setSenha] = useState('');
 
   const handleLogin = async () => {
-    try {
-      const response = await axios.get('http://172.16.201.225:8080/usuarios');
-      const usuarios = response.data;
+  try {
+    const response = await axios.post('http://172.16.201.225:8080/auth/login', {
+      email,
+      senha
+    });
 
-      const usuarioEncontrado = usuarios.find(u => u.email === email && u.senha === senha);
+    const { usuario } = response.data;
 
-      if (!usuarioEncontrado) {
-        Alert.alert('Erro', 'Usuário não encontrado ou senha incorreta.');
-        return;
-      }
+    if (usuario.tipo !== 'ALUNO') {
+      Alert.alert('Acesso negado', 'Somente alunos podem usar o aplicativo.');
+      return;
+    }
 
-      if (usuarioEncontrado.tipo !== 'ALUNO') {
-        Alert.alert('Acesso negado', 'Somente alunos podem usar o aplicativo.');
-        return;
-      }
+    navigation.navigate('DashboardAluno', { usuario });
 
-      // Navega para a página em branco de teste
-      navigation.navigate('DashboardAluno', { usuario: usuarioEncontrado });
+  } catch (error) {
+    console.error(error);
 
-    } catch (error) {
-      console.error(error);
+    if (error.response && error.response.status === 401) {
+      Alert.alert('Erro', 'E-mail ou senha inválidos.');
+    } else {
       Alert.alert('Erro', 'Falha ao conectar com o servidor.');
     }
-  };
+  }
+};
+
 
   return (
     <View style={styles.container}>
