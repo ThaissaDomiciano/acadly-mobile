@@ -42,7 +42,7 @@ export default function DashboardAluno({ route, navigation }) {
   useEffect(() => {
     async function carregarTurmas() {
       try {
-        const response = await axios.get(`http://172.16.201.225:8080/aluno-turma/turmas/${usuario.id}`);
+        const response = await axios.get(`http://192.168.248.97:8080/aluno-turma/turmas/${usuario.id}`);
         setTurmas(response.data);
       } catch (error) {
         console.error(error);
@@ -59,9 +59,9 @@ export default function DashboardAluno({ route, navigation }) {
     try {
       let url;
       if (turmaSelecionada) {
-        url = `http://172.16.201.225:8080/entregas/notas/aluno/${usuario.id}/turma/${turmaSelecionada}`;
+        url = `http://192.168.248.97:8080/entregas/notas/aluno/${usuario.id}/turma/${turmaSelecionada}`;
       } else {
-        url = `http://172.16.201.225:8080/entregas/notas/aluno/${usuario.id}`;
+        url = `http://192.168.248.97:8080/entregas/notas/aluno/${usuario.id}`;
       }
 
       const response = await axios.get(url);
@@ -82,7 +82,7 @@ export default function DashboardAluno({ route, navigation }) {
 
     try {
       const response = await axios.get(
-        `http://172.16.201.225:8080/entregas/status/aluno/${usuario.id}/turma/${turmaSelecionada}`
+        `http://192.168.248.97:8080/entregas/status/aluno/${usuario.id}/turma/${turmaSelecionada}`
       );
       setAtividades(response.data);
       const novoEstado = !mostrarAtividades;

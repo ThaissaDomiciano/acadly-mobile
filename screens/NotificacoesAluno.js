@@ -9,7 +9,7 @@ export default function NotificacoesAluno({ route, navigation }) {
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    axios.get(`http://172.16.201.225:8080/notificacoes/aluno/${usuario.id}`)
+    axios.get(`http://192.168.248.97:8080/notificacoes/aluno/${usuario.id}`)
       .then(res => setNotificacoes(res.data))
       .catch(err => {
         console.error(err);

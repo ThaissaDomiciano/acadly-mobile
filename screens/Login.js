@@ -8,7 +8,7 @@ export default function Login({ navigation }) {
 
   const handleLogin = async () => {
   try {
-    const response = await axios.post('http://172.16.201.225:8080/auth/login', {
+    const response = await axios.post('http://192.168.248.97:8080/auth/login', {
       email,
       senha
     });
